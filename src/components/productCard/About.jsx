@@ -6,11 +6,10 @@ function About() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-16 px-4 sm:px-6 lg:px-8">
+            <div className="bg-slate-800/10 text-white py-16 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto text-center">
-                    <img src={logo} alt="ProHelp Logo" className="mx-auto h-16 w-auto mb-8" />
-                    <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">About ProHelp</h1>
-                    <p className="mt-6 text-xl max-w-3xl mx-auto">
+                    <h1 className="text-4xl text-slate-700 font-bold sm:text-5xl lg:text-6xl">About ProHelp</h1>
+                    <p className="mt-6 text-xl text-slate-600 max-w-3xl mx-auto">
                         Your trusted e-commerce platform connecting buyers and sellers worldwide. 
                         We're building the future of online shopping with innovation, security, and customer satisfaction at our core.
                     </p>
@@ -93,24 +92,24 @@ function About() {
             </div>
 
             {/* Stats Section */}
-            <div className="bg-indigo-800 py-16">
+            <div className="bg-slate-800/10 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                    <div className="grid grid-cols-1 text-salte-700 md:grid-cols-4 gap-8 text-center">
                         <div>
-                            <div className="text-4xl font-bold text-white">10,000+</div>
-                            <div className="text-indigo-200 mt-2">Happy Customers</div>
+                            <div className="text-4xl font-bold ">10,000+</div>
+                            <div className=" mt-2">Happy Customers</div>
                         </div>
                         <div>
-                            <div className="text-4xl font-bold text-white">500+</div>
-                            <div className="text-indigo-200 mt-2">Trusted Sellers</div>
+                            <div className="text-4xl font-bold ">500+</div>
+                            <div className=" mt-2">Trusted Sellers</div>
                         </div>
                         <div>
-                            <div className="text-4xl font-bold text-white">25,000+</div>
-                            <div className="text-indigo-200 mt-2">Products Available</div>
+                            <div className="text-4xl font-bold ">25,000+</div>
+                            <div className="0 mt-2">Products Available</div>
                         </div>
                         <div>
-                            <div className="text-4xl font-bold text-white">99.9%</div>
-                            <div className="text-indigo-200 mt-2">Uptime Guarantee</div>
+                            <div className="text-4xl font-bold ">99.9%</div>
+                            <div className=" mt-2">Uptime Guarantee</div>
                         </div>
                     </div>
                 </div>
@@ -124,17 +123,17 @@ function About() {
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">Customer Support</h3>
                             <p className="text-gray-600">support@prohelp.com</p>
-                            <p className="text-gray-600">+1 (555) 123-4567</p>
+                            <p className="text-gray-600">+91 xxxxxxxxx</p>
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">Business Inquiries</h3>
                             <p className="text-gray-600">business@prohelp.com</p>
-                            <p className="text-gray-600">+1 (555) 987-6543</p>
+                            <p className="text-gray-600">+91 xxxxxxxxx</p>
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">Press & Media</h3>
                             <p className="text-gray-600">press@prohelp.com</p>
-                            <p className="text-gray-600">+1 (555) 456-7890</p>
+                            <p className="text-gray-600">+91 xxxxxxxxx</p>
                         </div>
                     </div>
                     <div className="mt-12">
