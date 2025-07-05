@@ -77,7 +77,7 @@ const Home = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
-            <section className="relative h-screen bg-slate-800 text-white overflow-hidden">
+            <section className="relative h-screen bg-slate-800/10 text-white overflow-hidden">
                 <div className="relative mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <motion.div
@@ -85,11 +85,11 @@ const Home = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <h1 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                            <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-slate-700 leading-tight">
                                 Discover Amazing
-                                <span className="block text-yellow-400">Products</span>
+                                <span className="block text-slate-500">Products</span>
                             </h1>
-                            <p className="text-lg lg:text-xl mb-8 text-gray-300 leading-relaxed">
+                            <p className="text-lg lg:text-xl mb-8 text-slate-700 leading-relaxed">
                                 Shop from thousands of verified sellers and find exactly what you're looking for
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4">
@@ -102,7 +102,7 @@ const Home = () => {
                                 </button>
                                 <button
                                     onClick={() => navigate('/about')}
-                                    className="border-2 border-gray-400 text-gray-300 px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 hover:border-gray-300 transition-colors"
+                                    className="border-2 border-gray-400 text-gray-300 px-8 py-3 rounded-lg font-semibold bg-gray-700 hover:border-gray-300 transition-colors"
                                 >
                                     Learn More
                                 </button>
@@ -114,7 +114,7 @@ const Home = () => {
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="hidden lg:block"
                         >
-                            <div className="bg-white rounded-lg p-6 shadow-xl">
+                            <div className="rounded-lg shadow-xl">
                                 <img 
                                     src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&q=80" 
                                     alt="Shopping" 
@@ -154,11 +154,11 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            <section className="py-16 bg-gray-50">
+            <section className="py-16 bg-slate-800/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-                        <p className="text-xl text-gray-600">Explore our wide range of product categories</p>
+                        <h2 className="text-3xl font-bold text-slate-800 mb-4">Shop by Category</h2>
+                        <p className="text-xl text-slate-600">Explore our wide range of product categories</p>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {categories.map((category, index) => (
@@ -241,24 +241,24 @@ const Home = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gray-300">
+            <section className="py-16 bg-slate-800/10">
                 <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-white mb-4">
+                    <h2 className="text-3xl font-bold text-slate-800 mb-4">
                         Ready to Start Shopping?
                     </h2>
-                    <p className="text-xl text-indigo-100 mb-8">
+                    <p className="text-xl text-slate-700 mb-8">
                         Join thousands of satisfied customers and discover amazing products today
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                             onClick={() => navigate('/products')}
-                            className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                            className="bg-white text-slate-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                         >
                             Start Shopping
                         </button>
                         <button
                             onClick={() => navigate('/signup')}
-                            className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors"
+                            className="bg-white text-slate-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                         >
                             Create Account
                         </button>
