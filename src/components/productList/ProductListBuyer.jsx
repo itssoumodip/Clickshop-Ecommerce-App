@@ -3,6 +3,115 @@ import axios from "axios";
 import BuyerProductCard from "../productCard/BuyerProductCard.jsx";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
+import { theme } from '../../styles/theme';
+import { FiShoppingBag, FiAlertCircle } from 'react-icons/fi';
+
+const Container = styled.div`
+  min-height: 100vh;
+  background-color: ${theme.colors.background};
+  padding: ${theme.spacing.lg} 0;
+  
+  @media (max-width: ${theme.breakpoints.sm}) {
+    padding: ${theme.spacing.md} 0;
+  }
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 ${theme.spacing.lg};
+  
+  @media (max-width: ${theme.breakpoints.sm}) {
+    padding: 0 ${theme.spacing.md};
+  }
+`;
+
+const Title = styled.h1`
+  font-size: ${theme.typography.sizes['3xl']};
+  font-weight: bold;
+  color: ${theme.colors.text};
+  margin-bottom: ${theme.spacing.sm};
+  
+  @media (max-width: ${theme.breakpoints.sm}) {
+    font-size: ${theme.typography.sizes['2xl']};
+  }
+`;
+
+const Subtitle = styled.p`
+  font-size: ${theme.typography.sizes.lg};
+  color: ${theme.colors.lightText};
+  
+  @media (max-width: ${theme.breakpoints.sm}) {
+    font-size: ${theme.typography.sizes.base};
+  }
+`;
+
+const ProductGrid = styled(motion.div)`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: ${theme.spacing.lg};
+  
+  @media (max-width: ${theme.breakpoints.xl}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: ${theme.breakpoints.lg}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: ${theme.breakpoints.md}) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: ${theme.spacing.md};
+  }
+  
+  @media (max-width: ${theme.breakpoints.sm}) {
+    grid-template-columns: 1fr;
+    gap: ${theme.spacing.md};
+  }
+`;
+
+const Loader = styled.div`
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid ${theme.colors.primary};
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+`;
+
+const ErrorContainer = styled.div`
+  background-color: rgba(239, 68, 68, 0.1); /* Light version of error color */
+  border: 1px solid ${theme.colors.error};
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const NoProductsContainer = styled.div`
+  background-color: rgba(245, 158, 11, 0.1); /* Light yellow */
+  border: 1px solid #F59E0B; /* Amber/Yellow */
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const HeaderSection = styled.div`
+    text-align: center;
+    margin-bottom: ${theme.spacing['2xl']};
+    padding-top: ${theme.spacing.lg};
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        margin-bottom: ${theme.spacing.lg};
+        padding-top: ${theme.spacing.md};
+    }
+`;
+
+const ProductItem = styled(motion.div)`
+    height: 100%;
+    width: 100%;
+`;
 
 function ProductListBuyer() {
     const [prods, setProds] = useState([]);
@@ -69,12 +178,12 @@ function ProductListBuyer() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Container>
+                <ContentWrapper>
                     <div className="text-center">
-                        <div className="inline-block h-12 w-12 border-4 border-t-blue-600 border-gray-200 rounded-full animate-spin"></div>
-                        <h2 className="mt-4 text-xl font-semibold text-gray-900">Loading Products...</h2>
-                        <p className="mt-2 text-gray-600">Please wait while we fetch the latest products</p>
+                        <Loader />
+                        <Title>Loading Products...</Title>
+                        <Subtitle>Please wait while we fetch the latest products</Subtitle>
                     </div>
                     <div className="mt-12 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {[...Array(8)].map((_, i) => (
@@ -87,20 +196,20 @@ function ProductListBuyer() {
                             </div>
                         ))}
                     </div>
-                </div>
-            </div>
+                </ContentWrapper>
+            </Container>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Container>
+                <ContentWrapper>
                     <div className="text-center">
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+                        <ErrorContainer>
                             <h2 className="text-xl font-semibold text-red-800 mb-2">Oops! Something went wrong</h2>
                             <p className="text-red-600">{error}</p>
-                        </div>
+                        </ErrorContainer>
                         <button
                             onClick={fetchProducts}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -108,20 +217,20 @@ function ProductListBuyer() {
                             Try Again
                         </button>
                     </div>
-                </div>
-            </div>
+                </ContentWrapper>
+            </Container>
         );
     }
 
     if (prods.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Container>
+                <ContentWrapper>
                     <div className="text-center">
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                        <NoProductsContainer>
                             <h2 className="text-xl font-semibold text-yellow-800 mb-2">No Products Available</h2>
                             <p className="text-yellow-600">Check back later for new products!</p>
-                        </div>
+                        </NoProductsContainer>
                         <button
                             onClick={fetchProducts}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -129,37 +238,32 @@ function ProductListBuyer() {
                             Refresh
                         </button>
                     </div>
-                </div>
-            </div>
+                </ContentWrapper>
+            </Container>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Our Products
-                    </h1>
-                    <p className="text-xl text-gray-600">
-                        Find the perfect items for your needs
-                    </p>
-                </div>
+        <Container>
+            <ContentWrapper>
+                <HeaderSection>
+                    <Title>Our Products</Title>
+                    <Subtitle>Find the perfect items for your needs</Subtitle>
+                </HeaderSection>
 
-                <motion.div 
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+                <ProductGrid 
                     variants={container}
                     initial="hidden"
                     animate="show"
                 >
                     {prods.map((product) => (
-                        <motion.div key={product._id} variants={item} className="h-full">
+                        <ProductItem key={product._id} variants={item}>
                             <BuyerProductCard data={product} />
-                        </motion.div>
+                        </ProductItem>
                     ))}
-                </motion.div>
-            </div>
-        </div>
+                </ProductGrid>
+            </ContentWrapper>
+        </Container>
     );
 }
 

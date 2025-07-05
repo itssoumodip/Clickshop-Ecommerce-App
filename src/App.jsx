@@ -60,13 +60,13 @@ function App() {
   }, []);
 
   return (
-    <div className="font-sans box-border h-screen w-screen">
+    <div className="font-sans box-border min-h-screen w-full">
       <BrowserRouter>
         {userType === "seller" && <NavbarSeller />}
         {userType !== "seller" && !localStorage.getItem("adminToken") && (
           <NavbarBuyer />
         )}
-        <div className="w-full h-full pt-6 px-10 box-border overflow-auto">
+        <div className="w-full box-border flex flex-col">
           <Routes>
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

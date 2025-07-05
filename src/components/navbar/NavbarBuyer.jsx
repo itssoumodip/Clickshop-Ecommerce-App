@@ -56,6 +56,7 @@ const Header = styled.header`
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 100%;
 `;
 
 const Nav = styled.nav`
@@ -65,6 +66,10 @@ const Nav = styled.nav`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        padding: ${theme.spacing.sm} ${theme.spacing.md};
+    }
 `;
 
 const LogoContainer = styled(Link)`
@@ -77,6 +82,10 @@ const Logo = styled.h1`
     font-weight: 700;
     color: ${theme.colors.primary};
     margin: 0;
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        font-size: ${theme.typography.sizes.lg};
+    }
 `;
 
 const MenuButton = styled.button`
@@ -109,6 +118,8 @@ const NavItems = styled.div`
         justify-content: center;
         transform: translateX(${props => props.isOpen ? '0' : '100%'});
         transition: transform 0.3s ease-in-out;
+        z-index: 1;
+        box-shadow: ${props => props.isOpen ? theme.shadows.lg : 'none'};
     }
 `;
 
@@ -121,12 +132,27 @@ const NavItem = styled.span`
     &:hover {
         color: ${theme.colors.primary};
     }
+    
+    @media (max-width: ${theme.breakpoints.md}) {
+        font-size: ${theme.typography.sizes.lg};
+        margin: ${theme.spacing.sm} 0;
+        padding: ${theme.spacing.md};
+    }
 `;
 
 const Actions = styled.div`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.md};
+    z-index: 2;
+    
+    @media (max-width: ${theme.breakpoints.md}) {
+        gap: ${theme.spacing.sm};
+    }
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        gap: ${theme.spacing.xs};
+    }
 `;
 
 const IconButton = styled(Link)`
@@ -137,15 +163,24 @@ const IconButton = styled(Link)`
     color: ${theme.colors.text};
     text-decoration: none;
     transition: ${theme.transitions.default};
+    padding: ${theme.spacing.xs};
 
     &:hover {
         color: ${theme.colors.primary};
+    }
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        padding: ${theme.spacing.xs} ${theme.spacing.xs};
     }
 `;
 
 const IconLabel = styled.span`
     font-size: ${theme.typography.sizes.xs};
     font-weight: 500;
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        font-size: ${theme.typography.sizes.xs};
+    }
 `;
 
 export default NavbarBuyer;

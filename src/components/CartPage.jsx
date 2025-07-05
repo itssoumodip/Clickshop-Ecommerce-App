@@ -315,8 +315,9 @@ function CartPage() {
 
     if (cartItems.length === 0) {
         return (
+            <div className='flex flex-col items-center justify-center min-h-screen'>
             <EmptyCart>
-                <div className="icon-wrapper">
+                <div className="icon-wrapper items-center  justify-center flex">
                     <FiShoppingBag size={64} />
                 </div>
                 <h3>Your cart is empty</h3>
@@ -325,6 +326,7 @@ function CartPage() {
                     Continue Shopping
                 </ShopNowButton>
             </EmptyCart>
+            </div>
         );
     }
 
@@ -395,23 +397,25 @@ function CartPage() {
                                             </ProductDetails>
                                         </ProductCell>
                                         <PriceCell>₹{parsePrice(item.product.price).toFixed(2)}</PriceCell>
-                                        <QuantityCell>
-                                            <QuantityControl>
-                                                <QuantityButton 
-                                                    onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                                                    disabled={isProcessing || item.quantity <= 1}
-                                                >
-                                                    <FiMinus />
-                                                </QuantityButton>
-                                                <QuantityDisplay>{item.quantity}</QuantityDisplay>
-                                                <QuantityButton 
-                                                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                                                    disabled={isProcessing}
-                                                >
-                                                    <FiPlus />
-                                                </QuantityButton>
-                                            </QuantityControl>
-                                        </QuantityCell>
+                                        <MobileItemRow>
+                                            <QuantityCell>
+                                                <QuantityControl>
+                                                    <QuantityButton 
+                                                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                                                        disabled={isProcessing || item.quantity <= 1}
+                                                    >
+                                                        <FiMinus />
+                                                    </QuantityButton>
+                                                    <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                                                    <QuantityButton 
+                                                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        <FiPlus />
+                                                    </QuantityButton>
+                                                </QuantityControl>
+                                            </QuantityCell>
+                                        </MobileItemRow>
                                         <TotalCell>
                                             <ItemSubtotal>
                                                 ₹{(parsePrice(item.product.price) * item.quantity).toFixed(2)}
@@ -473,6 +477,11 @@ const PageContainer = styled.div`
     min-height: 100vh;
     background-color: ${theme.colors.background};
     padding: ${theme.spacing.lg} 0;
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        padding: ${theme.spacing.sm} 0;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
 `;
 
 const Container = styled.div`
@@ -481,7 +490,8 @@ const Container = styled.div`
     padding: ${theme.spacing.xl};
     
     @media (max-width: ${theme.breakpoints.sm}) {
-        padding: ${theme.spacing.md};
+        padding: ${theme.spacing.md} ${theme.spacing.xs};
+        width: 100%;
     }
 `;
 
@@ -527,6 +537,15 @@ const CartItemsList = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.md};
+    width: 100%;
+    
+    @media (max-width: ${theme.breakpoints.md}) {
+        gap: ${theme.spacing.sm};
+    }
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        padding: 0;
+    }
 `;
 
 const CartItemCard = styled(motion.div)`
@@ -540,19 +559,22 @@ const CartItemCard = styled(motion.div)`
     box-shadow: ${theme.shadows.sm};
     border: 1px solid ${theme.colors.border};
 
-    @media (max-width: ${theme.breakpoints.md}) {
-        grid-template-columns: 1fr;
-        gap: ${theme.spacing.md};
-        padding: ${theme.spacing.md};
-    }
-
     @media (max-width: ${theme.breakpoints.lg} and min-width: ${theme.breakpoints.md}) {
         grid-template-columns: 3fr 1fr 1fr 1fr;
         gap: ${theme.spacing.md};
     }
     
+    @media (max-width: ${theme.breakpoints.md}) {
+        display: flex;
+        flex-direction: column;
+        gap: ${theme.spacing.md};
+        padding: ${theme.spacing.md};
+        width: 100%;
+        align-items: flex-start;
+    }
+    
     @media (max-width: ${theme.breakpoints.sm}) {
-        padding: ${theme.spacing.sm};
+        padding: ${theme.spacing.sm} ${theme.spacing.md};
     }
 `;
 
@@ -576,10 +598,13 @@ const ProductCell = styled.div`
     @media (max-width: ${theme.breakpoints.md}) {
         flex-wrap: nowrap;
         width: 100%;
+        border-bottom: 1px solid ${theme.colors.border};
+        padding-bottom: ${theme.spacing.md};
     }
     
     @media (max-width: ${theme.breakpoints.sm}) {
         align-items: flex-start;
+        padding-bottom: ${theme.spacing.sm};
     }
 `;
 
@@ -591,6 +616,7 @@ const ProductDetails = styled.div`
     
     @media (max-width: ${theme.breakpoints.md}) {
         width: calc(100% - 80px); /* Adjust for image width */
+        padding-right: ${theme.spacing.sm};
     }
     
     @media (max-width: ${theme.breakpoints.sm}) {
@@ -612,7 +638,7 @@ const ItemBrand = styled.span`
 const MobileItemMeta = styled.div`
     display: none;
     
-    @media (max-width: ${theme.breakpoints.sm}) {
+    @media (max-width: ${theme.breakpoints.md}) {
         display: flex;
         flex-direction: column;
         margin-top: ${theme.spacing.xs};
@@ -625,8 +651,9 @@ const MobileItemPrice = styled.span`
     font-weight: 600;
     display: none;
     
-    @media (max-width: ${theme.breakpoints.sm}) {
+    @media (max-width: ${theme.breakpoints.md}) {
         display: block;
+        margin-top: ${theme.spacing.xs};
     }
 `;
 
@@ -637,20 +664,7 @@ const PriceCell = styled.div`
     text-align: center;
 
     @media (max-width: ${theme.breakpoints.md}) {
-        text-align: left;
-        margin-top: ${theme.spacing.sm};
-        display: flex;
-        align-items: center;
-    }
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        &:before {
-            content: 'Price: ';
-            font-size: ${theme.typography.sizes.sm};
-            color: ${theme.colors.lightText};
-            margin-right: ${theme.spacing.sm};
-            font-weight: 400;
-        }
+        display: none; /* Hide on mobile since we show it in MobileItemMeta */
     }
 `;
 
@@ -660,9 +674,10 @@ const QuantityCell = styled.div`
 
     @media (max-width: ${theme.breakpoints.md}) {
         justify-content: flex-start;
-        margin-top: ${theme.spacing.sm};
+        width: 100%;
         display: flex;
         align-items: center;
+        margin-bottom: ${theme.spacing.sm};
     }
     
     @media (max-width: ${theme.breakpoints.sm}) {
@@ -671,6 +686,7 @@ const QuantityCell = styled.div`
             font-size: ${theme.typography.sizes.sm};
             color: ${theme.colors.lightText};
             margin-right: ${theme.spacing.sm};
+            min-width: 70px;
         }
     }
 `;
@@ -682,13 +698,13 @@ const TotalCell = styled.div`
     gap: ${theme.spacing.md};
 
     @media (max-width: ${theme.breakpoints.md}) {
-        margin-top: ${theme.spacing.sm};
-        padding-top: ${theme.spacing.sm};
-        border-top: 1px solid ${theme.colors.border};
+        width: 100%;
+        border-top: none;
+        justify-content: space-between;
     }
     
     @media (max-width: ${theme.breakpoints.sm}) {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
 `;
 
@@ -700,8 +716,13 @@ const QuantityControl = styled.div`
     border-radius: ${theme.borderRadius.sm};
     background: ${theme.colors.background};
     
-    @media (max-width: ${theme.breakpoints.sm}) {
+    @media (max-width: ${theme.breakpoints.md}) {
         height: 36px;
+        margin-left: auto;
+    }
+    
+    @media (max-width: ${theme.breakpoints.sm}) {
+        margin-left: 0;
     }
 `;
 
@@ -743,7 +764,7 @@ const ItemSubtotal = styled.div`
     font-weight: 600;
     color: ${theme.colors.text};
     
-    @media (max-width: ${theme.breakpoints.sm}) {
+    @media (max-width: ${theme.breakpoints.md}) {
         &:before {
             content: 'Total: ';
             font-size: ${theme.typography.sizes.sm};
@@ -751,6 +772,8 @@ const ItemSubtotal = styled.div`
             margin-right: ${theme.spacing.sm};
             font-weight: 400;
         }
+        display: flex;
+        align-items: center;
     }
 `;
 
@@ -1112,6 +1135,17 @@ const Benefit = styled.div`
 
     &:last-child {
         margin-bottom: 0;
+    }
+`;
+
+const MobileItemRow = styled.div`
+    display: none;
+    
+    @media (max-width: ${theme.breakpoints.md}) {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
     }
 `;
 
