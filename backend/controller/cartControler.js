@@ -115,45 +115,74 @@ const checkout = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { shippingAddress, paymentMethod } = req.body;
 
+  console.log('Checkout initiated for user:', _id);
+  console.log('Shipping address:', shippingAddress);
+  console.log('Payment method:', paymentMethod);
+
   try {
     // Get all cart items for the user
     const cartItems = await Cart.find({ user: _id, stage: 'CREATED' })
       .populate('product');
 
+    console.log('Cart items found:', cartItems.length);
+
     if (!cartItems.length) {
+      console.log('No items in cart for checkout');
       return res.status(400).json({ message: 'No items in cart' });
     }
 
+    // Validate cart items
+    const validCartItems = cartItems.filter(item => item.product && item.product._id);
+    
+    if (validCartItems.length === 0) {
+      console.log('No valid items in cart');
+      return res.status(400).json({ message: 'No valid items in cart' });
+    }
+
     // Calculate total amount
-    const totalAmount = cartItems.reduce((total, item) => {
-      return total + (item.product.price * item.quantity);
+    const totalAmount = validCartItems.reduce((total, item) => {
+      const price = Number(item.product.price) || 0;
+      const quantity = Number(item.quantity) || 0;
+      return total + (price * quantity);
     }, 0);
+
+    console.log('Total amount calculated:', totalAmount);
+
+    // Create order products array
+    const orderProducts = validCartItems.map(item => ({
+      product: item.product._id,
+      quantity: item.quantity,
+      price: item.product.price
+    }));
+
+    console.log('Order products mapped:', orderProducts.length);
 
     // Create new order
     const order = await Order.create({
       user: _id,
-      products: cartItems.map(item => ({
-        product: item.product._id,
-        quantity: item.quantity,
-        price: item.product.price
-      })),
+      products: orderProducts,
       shippingAddress,
       totalAmount,
       paymentMethod,
       status: 'pending'
     });
 
+    console.log('Order created successfully:', order._id);
+
     // Update cart items status
-    await Cart.updateMany(
+    const updateResult = await Cart.updateMany(
       { user: _id, stage: 'CREATED' },
       { $set: { stage: 'ORDERED' } }
     );
+
+    console.log('Cart items updated to ORDERED:', updateResult.modifiedCount);
 
     res.status(201).json({
       message: 'Order created successfully',
       order
     });
   } catch (error) {
+    console.error('Error during checkout:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -163,12 +192,23 @@ const getUserOrders = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
 
   try {
+    console.log('Fetching orders for user:', _id);
+    
     const orders = await Order.find({ user: _id })
       .populate('products.product')
       .sort({ createdAt: -1 });
-
-    res.json(orders);
+    
+    console.log('Orders found:', orders.length);
+    
+    if (!orders || orders.length === 0) {
+      console.log('No orders found for user');
+      return res.status(200).json([]);
+    }
+    
+    // Return an array directly for consistency with frontend expectation
+    res.status(200).json(orders);
   } catch (error) {
+    console.error('Error fetching orders:', error);
     res.status(500).json({ message: error.message });
   }
 });

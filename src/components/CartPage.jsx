@@ -134,11 +134,16 @@ function CartPage() {
             }
 
             setIsProcessing(true);
+            setError(null);
+            
             const storedData = JSON.parse(localStorage.getItem("user"));
             if (!storedData?.token) {
                 navigate('/login');
                 return;
             }
+
+            console.log('Processing checkout with shipping address:', shippingAddress);
+            console.log('Payment method:', paymentMethod);
 
             const token = storedData.token;
             const response = await axios.post(
@@ -147,15 +152,27 @@ function CartPage() {
                     shippingAddress,
                     paymentMethod
                 },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { 
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    } 
+                }
             );
 
+            console.log('Checkout response:', response.data);
+
             if (response.status === 201 || response.status === 200) {
-                navigate('/orders');
+                // Show success message briefly before redirecting
+                setError(null);
+                setTimeout(() => {
+                    navigate('/orders');
+                }, 1000);
             } else {
                 throw new Error('Checkout failed');
             }
         } catch (err) {
+            console.error('Checkout error:', err.response || err);
             setError(err.response?.data?.message || "Checkout failed. Please try again.");
             setCheckoutStep(1); // Go back to shipping step if there's an error
         } finally {

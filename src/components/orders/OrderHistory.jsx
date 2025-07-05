@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -12,17 +14,76 @@ const OrderHistory = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get('/cart/orders');
-      setOrders(data);
+      setLoading(true);
+      setError(null);
+      
+      // Get the token from localStorage
+      const storedData = JSON.parse(localStorage.getItem("user"));
+      if (!storedData?.token) {
+        setError('You need to log in to view your orders');
+        setLoading(false);
+        return;
+      }
+      
+      const token = storedData.token;
+      
+      console.log('Fetching orders with token:', token);
+      
+      // Use the full URL like other API calls
+      const { data } = await axios.get("http://localhost:5000/cart/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('Order response data:', data);
+      
+      // Check if data is an array directly or nested in an object
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else if (data && Array.isArray(data.orders)) {
+        setOrders(data.orders);
+      } else if (data && typeof data === 'object') {
+        // Try to find any array property that might contain the orders
+        const possibleOrdersArray = Object.values(data).find(val => Array.isArray(val));
+        if (possibleOrdersArray) {
+          setOrders(possibleOrdersArray);
+        } else {
+          console.warn('Unexpected orders response format:', data);
+          setOrders([]);
+        }
+      } else {
+        console.warn('Unexpected orders response format:', data);
+        setOrders([]);
+      }
+      
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('Error fetching orders:', error.response || error);
+      setError(error.response?.data?.message || 'Failed to load your orders. Please try again later.');
       setLoading(false);
     }
   };
 
   if (loading) {
-    return <LoadingWrapper>Loading...</LoadingWrapper>;
+    return <LoadingWrapper>Loading your orders...</LoadingWrapper>;
+  }
+  
+  if (error) {
+    return <ErrorMessage>{error}</ErrorMessage>;
+  }
+  
+  if (orders.length === 0) {
+    return (
+      <Container>
+        <h1>Order History</h1>
+        <EmptyState>
+          <p>You don't have any orders yet.</p>
+          <StyledLink to="/products">Continue Shopping</StyledLink>
+        </EmptyState>
+      </Container>
+    );
   }
 
   return (
@@ -37,11 +98,11 @@ const OrderHistory = () => {
             </OrderHeader>
             <OrderDetails>
               <ProductsList>
-                {order.products.map(item => (
-                  <ProductItem key={item.product._id}>
-                    <span>{item.product.name}</span>
+                {order.products && order.products.map(item => (
+                  <ProductItem key={item.product?._id || item._id}>
+                    <span>{item.product?.name || 'Product'}</span>
                     <span>x{item.quantity}</span>
-                    <span>${item.price.toFixed(2)}</span>
+                    <span>${item.price?.toFixed(2) || '0.00'}</span>
                   </ProductItem>
                 ))}
               </ProductsList>
@@ -52,18 +113,20 @@ const OrderHistory = () => {
                 </InfoItem>
                 <InfoItem>
                   <span>Total Amount:</span>
-                  <span>${order.totalAmount.toFixed(2)}</span>
+                  <span>${order.totalAmount?.toFixed(2) || '0.00'}</span>
                 </InfoItem>
                 <InfoItem>
                   <span>Payment Method:</span>
                   <span>{order.paymentMethod}</span>
                 </InfoItem>
-                <ShippingAddress>
-                  <h4>Shipping Address</h4>
-                  <p>{order.shippingAddress.street}</p>
-                  <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-                  <p>{order.shippingAddress.country}</p>
-                </ShippingAddress>
+                {order.shippingAddress && (
+                  <ShippingAddress>
+                    <h4>Shipping Address</h4>
+                    <p>{order.shippingAddress.street}</p>
+                    <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
+                    <p>{order.shippingAddress.country}</p>
+                  </ShippingAddress>
+                )}
               </OrderInfo>
             </OrderDetails>
           </OrderCard>
@@ -142,6 +205,10 @@ const OrderDetails = styled.div`
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
   padding: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const ProductsList = styled.div`
@@ -159,11 +226,28 @@ const ProductItem = styled.div`
   &:last-child {
     border-bottom: none;
   }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+    
+    span:first-child {
+      grid-column: 1 / -1;
+      margin-bottom: 0.5rem;
+    }
+  }
 `;
 
 const OrderInfo = styled.div`
   border-left: 1px solid #e2e8f0;
   padding-left: 1rem;
+  
+  @media (max-width: 768px) {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-left: 0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
 `;
 
 const InfoItem = styled.div`
@@ -203,6 +287,41 @@ const LoadingWrapper = styled.div`
   height: 200px;
   font-size: 1.2rem;
   color: #2d3748;
+`;
+
+const ErrorMessage = styled.div`
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 4px;
+  text-align: center;
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem 1rem;
+  
+  p {
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 1.5rem;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  display: inline-block;
+  background-color: #3182ce;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    background-color: #2b6cb0;
+  }
 `;
 
 export default OrderHistory;
