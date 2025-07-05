@@ -87,7 +87,7 @@ const OrderHistory = () => {
   }
 
   return (
-    <Container>
+    <Container className='lg:mx-auto'>
       <h1>Order History</h1>
       <OrdersGrid>
         {orders.map(order => (
@@ -138,7 +138,7 @@ const OrderHistory = () => {
 
 const Container = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  // margin: 0 auto;
   padding: 2rem;
 
   h1 {

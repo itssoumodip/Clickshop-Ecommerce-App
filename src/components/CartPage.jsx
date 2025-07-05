@@ -351,7 +351,7 @@ function CartPage() {
         <PageContainer>
             <Container>
                 <Header>
-                    <Title>Shopping Cart</Title>
+                    <Title className='font-bold'>Shopping Cart</Title>
                     <Subtitle>{cartItems.length} items in your cart</Subtitle>
                 </Header>
 

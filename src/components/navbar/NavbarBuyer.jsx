@@ -18,7 +18,7 @@ function NavbarBuyer() {
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50 w-full">
             <div className="max-w-7xl mx-auto">
-                <nav className="px-4 sm:px-6 lg:px-8 py-3">
+                <nav className="px-4 sm:px-6 lg:px-8 py-2">
                     {/* Top navigation bar */}
                     <div className="flex items-center justify-between">
                         {/* Logo */}
@@ -117,32 +117,32 @@ function NavbarBuyer() {
 
                     {/* Mobile Menu Dropdown */}
                     {isMenuOpen && (
-                        <div className="md:hidden mt-3 pt-2 border-t border-gray-200">
+                        <div className="md:hidden mt-1 pt-1 border-t border-gray-200">
                             <NavLink 
                                 to="/home" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="block py-2 text-gray-700 hover:text-indigo-600"
+                                className="block py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 Home
                             </NavLink>
                             <NavLink 
                                 to="/products" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="block py-2 text-gray-700 hover:text-indigo-600"
+                                className="block py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 Products
                             </NavLink>
                             <NavLink 
                                 to="/orders" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="block py-2 text-gray-700 hover:text-indigo-600"
+                                className="block py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 My Orders
                             </NavLink>
                             <NavLink 
                                 to="/about" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="block py-2 text-gray-700 hover:text-indigo-600"
+                                className="block py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 About
                             </NavLink>
@@ -150,7 +150,7 @@ function NavbarBuyer() {
                             <NavLink 
                                 to="/cart" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="flex items-center py-2 text-gray-700 hover:text-indigo-600"
+                                className="flex items-center py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 <FiShoppingCart size={18} className="mr-2" />
                                 Cart
@@ -158,7 +158,7 @@ function NavbarBuyer() {
                             <NavLink 
                                 to="/profile" 
                                 onClick={() => setIsMenuOpen(false)} 
-                                className="flex items-center py-2 text-gray-700 hover:text-indigo-600"
+                                className="flex items-center py-1 text-gray-700 hover:text-indigo-600"
                             >
                                 <FiUser size={18} className="mr-2" />
                                 Profile
@@ -168,7 +168,7 @@ function NavbarBuyer() {
                 </nav>
                 
                 {/* Mobile Search Bar */}
-                <div className="block md:hidden px-4 pb-3">
+                <div className="block md:hidden px-4 pb-1">
                     <form onSubmit={handleSearch} className="flex">
                         <input
                             type="text"
