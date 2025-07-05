@@ -26,6 +26,7 @@ import ProductListSeller from "./components/productList/ProductListSeller.jsx";
 import DetailPageSeller from "./components/productList/DetailPageSeller.jsx";
 import About from "./components/productCard/About.jsx";
 import Profile from "./components/login/Profile.jsx";
+import Home from "./components/pages/Home.jsx";
 import { useUser } from "./context/userContext.jsx";
 import OrderHistory from "./components/orders/OrderHistory.jsx";
 
@@ -94,8 +95,8 @@ function App() {
             ) : (
               <>
                 {/* Buyer Routes */}
-                <Route path="/" element={<ProductListBuyer />} />
-                <Route path="/home" element={<ProductListBuyer />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/products" element={<ProductListBuyer />} />
                 <Route element={<PrivetComponentBuyer />}>
                   <Route path="/detail" element={<ProductDetails />} />

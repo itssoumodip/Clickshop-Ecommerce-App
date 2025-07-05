@@ -1,186 +1,166 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiPackage } from 'react-icons/fi';
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiPackage, FiSearch } from 'react-icons/fi';
 
 function NavbarBuyer() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+            setSearchTerm('');
+        }
+    };
+
     return (
-        <Header>
-            <Nav>
-                <LogoContainer to="/home">
-                    <Logo>ClickShop</Logo>
-                </LogoContainer>
+        <header className="bg-white shadow-sm sticky top-0 z-50 w-full">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between relative">
+                <Link to="/home" className="text-decoration-none z-10">
+                    <h1 className="text-xl lg:text-2xl font-bold text-indigo-600 m-0">ProHelp</h1>
+                </Link>
 
-                <MenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <button 
+                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 z-10"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
                     {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-                </MenuButton>
+                </button>
 
-                <NavItems isOpen={isMenuOpen}>
-                    <NavLink to="/home" onClick={() => setIsMenuOpen(false)}>
-                        <NavItem>Home</NavItem>
-                    </NavLink>
-                    <NavLink to="/products" onClick={() => setIsMenuOpen(false)}>
-                        <NavItem>Products</NavItem>
-                    </NavLink>
-                    <NavLink to="/orders" onClick={() => setIsMenuOpen(false)}>
-                        <NavItem>My Orders</NavItem>
-                    </NavLink>
-                    <NavLink to="/about" onClick={() => setIsMenuOpen(false)}>
-                        <NavItem>About</NavItem>
-                    </NavLink>
-                </NavItems>
+                {/* Mobile Menu Dropdown */}
+                {isMenuOpen && (
+                    <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 w-48 z-50 md:hidden">
+                        <NavLink 
+                            to="/home" 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className="block px-4 py-2 text-gray-700 hover:bg-indigo-600 hover:text-white"
+                        >
+                            Home
+                        </NavLink>
+                        <NavLink 
+                            to="/products" 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className="block px-4 py-2 text-gray-700 hover:bg-indigo-600 hover:text-white"
+                        >
+                            Products
+                        </NavLink>
+                        <NavLink 
+                            to="/orders" 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className="block px-4 py-2 text-gray-700 hover:bg-indigo-600 hover:text-white"
+                        >
+                            My Orders
+                        </NavLink>
+                        <NavLink 
+                            to="/about" 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className="block px-4 py-2 text-gray-700 hover:bg-indigo-600 hover:text-white"
+                        >
+                            About
+                        </NavLink>
+                    </div>
+                )}
 
-                <Actions>
-                    <IconButton to="/cart">
+                <div className="hidden md:flex items-center gap-8">
+                    <NavLink 
+                        to="/home" 
+                        className={({ isActive }) => 
+                            `${isActive ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'} 
+                            font-medium transition-colors duration-200 pb-1`
+                        }
+                    >
+                        Home
+                    </NavLink>
+                    <NavLink 
+                        to="/products" 
+                        className={({ isActive }) => 
+                            `${isActive ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'} 
+                            font-medium transition-colors duration-200 pb-1`
+                        }
+                    >
+                        Products
+                    </NavLink>
+                    <NavLink 
+                        to="/orders" 
+                        className={({ isActive }) => 
+                            `${isActive ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'} 
+                            font-medium transition-colors duration-200 pb-1`
+                        }
+                    >
+                        My Orders
+                    </NavLink>
+                    <NavLink 
+                        to="/about" 
+                        className={({ isActive }) => 
+                            `${isActive ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'} 
+                            font-medium transition-colors duration-200 pb-1`
+                        }
+                    >
+                        About
+                    </NavLink>
+                </div>
+                
+                {/* Desktop Search Bar */}
+                <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
+                    <form onSubmit={handleSearch} className="flex w-full">
+                        <input
+                            type="text"
+                            placeholder="Search products, brands..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        />
+                        <button
+                            type="submit"
+                            className="px-3 py-1.5 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            <FiSearch size={16} />
+                        </button>
+                    </form>
+                </div>
+
+                <div className="flex items-center gap-4 z-10">
+                    <Link 
+                        to="/cart" 
+                        className="flex flex-col items-center gap-1 text-gray-600 hover:text-indigo-600 transition-colors duration-200 p-2"
+                    >
                         <FiShoppingCart size={20} />
-                        <IconLabel>Cart</IconLabel>
-                    </IconButton>
-                    <IconButton to="/profile">
+                        <span className="text-xs font-medium">Cart</span>
+                    </Link>
+                    <Link 
+                        to="/profile" 
+                        className="flex flex-col items-center gap-1 text-gray-600 hover:text-indigo-600 transition-colors duration-200 p-2"
+                    >
                         <FiUser size={20} />
-                        <IconLabel>Profile</IconLabel>
-                    </IconButton>
-                </Actions>
-            </Nav>
-        </Header>
+                        <span className="text-xs font-medium">Profile</span>
+                    </Link>
+                </div>
+            </nav>
+            
+            {/* Mobile Search Bar */}
+            <div className="block md:hidden px-4 pb-3">
+                <form onSubmit={handleSearch} className="flex">
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button
+                        type="submit"
+                        className="px-3 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700 transition-colors"
+                    >
+                        <FiSearch size={18} />
+                    </button>
+                </form>
+            </div>
+        </header>
     );
 }
 
-const Header = styled.header`
-    background: ${theme.colors.background};
-    box-shadow: ${theme.shadows.sm};
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    width: 100%;
-`;
-
-const Nav = styled.nav`
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: ${theme.spacing.md} ${theme.spacing.lg};
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        padding: ${theme.spacing.sm} ${theme.spacing.md};
-    }
-`;
-
-const LogoContainer = styled(Link)`
-    text-decoration: none;
-    z-index: 2;
-`;
-
-const Logo = styled.h1`
-    font-size: ${theme.typography.sizes.xl};
-    font-weight: 700;
-    color: ${theme.colors.primary};
-    margin: 0;
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        font-size: ${theme.typography.sizes.lg};
-    }
-`;
-
-const MenuButton = styled.button`
-    display: none;
-    background: none;
-    border: none;
-    color: ${theme.colors.text};
-    cursor: pointer;
-    padding: ${theme.spacing.sm};
-    z-index: 2;
-
-    @media (max-width: ${theme.breakpoints.md}) {
-        display: block;
-    }
-`;
-
-const NavItems = styled.div`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.xl};
-
-    @media (max-width: ${theme.breakpoints.md}) {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: ${theme.colors.background};
-        flex-direction: column;
-        justify-content: center;
-        transform: translateX(${props => props.isOpen ? '0' : '100%'});
-        transition: transform 0.3s ease-in-out;
-        z-index: 1;
-        box-shadow: ${props => props.isOpen ? theme.shadows.lg : 'none'};
-    }
-`;
-
-const NavItem = styled.span`
-    color: ${theme.colors.text};
-    font-size: ${theme.typography.sizes.base};
-    font-weight: 500;
-    transition: ${theme.transitions.default};
-
-    &:hover {
-        color: ${theme.colors.primary};
-    }
-    
-    @media (max-width: ${theme.breakpoints.md}) {
-        font-size: ${theme.typography.sizes.lg};
-        margin: ${theme.spacing.sm} 0;
-        padding: ${theme.spacing.md};
-    }
-`;
-
-const Actions = styled.div`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.md};
-    z-index: 2;
-    
-    @media (max-width: ${theme.breakpoints.md}) {
-        gap: ${theme.spacing.sm};
-    }
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        gap: ${theme.spacing.xs};
-    }
-`;
-
-const IconButton = styled(Link)`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: ${theme.spacing.xs};
-    color: ${theme.colors.text};
-    text-decoration: none;
-    transition: ${theme.transitions.default};
-    padding: ${theme.spacing.xs};
-
-    &:hover {
-        color: ${theme.colors.primary};
-    }
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        padding: ${theme.spacing.xs} ${theme.spacing.xs};
-    }
-`;
-
-const IconLabel = styled.span`
-    font-size: ${theme.typography.sizes.xs};
-    font-weight: 500;
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        font-size: ${theme.typography.sizes.xs};
-    }
-`;
 
 export default NavbarBuyer;

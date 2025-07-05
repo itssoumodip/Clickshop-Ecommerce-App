@@ -1,123 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BuyerProductCard from "../productCard/BuyerProductCard.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { FiShoppingBag, FiAlertCircle } from 'react-icons/fi';
+import { FiShoppingBag, FiAlertCircle, FiSearch, FiX, FiFilter } from 'react-icons/fi';
 
-const Container = styled.div`
-  min-height: 100vh;
-  background-color: ${theme.colors.background};
-  padding: ${theme.spacing.lg} 0;
-  
-  @media (max-width: ${theme.breakpoints.sm}) {
-    padding: ${theme.spacing.md} 0;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 ${theme.spacing.lg};
-  
-  @media (max-width: ${theme.breakpoints.sm}) {
-    padding: 0 ${theme.spacing.md};
-  }
-`;
-
-const Title = styled.h1`
-  font-size: ${theme.typography.sizes['3xl']};
-  font-weight: bold;
-  color: ${theme.colors.text};
-  margin-bottom: ${theme.spacing.sm};
-  
-  @media (max-width: ${theme.breakpoints.sm}) {
-    font-size: ${theme.typography.sizes['2xl']};
-  }
-`;
-
-const Subtitle = styled.p`
-  font-size: ${theme.typography.sizes.lg};
-  color: ${theme.colors.lightText};
-  
-  @media (max-width: ${theme.breakpoints.sm}) {
-    font-size: ${theme.typography.sizes.base};
-  }
-`;
-
-const ProductGrid = styled(motion.div)`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: ${theme.spacing.lg};
-  
-  @media (max-width: ${theme.breakpoints.xl}) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (max-width: ${theme.breakpoints.lg}) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: ${theme.breakpoints.md}) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: ${theme.spacing.md};
-  }
-  
-  @media (max-width: ${theme.breakpoints.sm}) {
-    grid-template-columns: 1fr;
-    gap: ${theme.spacing.md};
-  }
-`;
-
-const Loader = styled.div`
-  display: inline-block;
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid ${theme.colors.primary};
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-`;
-
-const ErrorContainer = styled.div`
-  background-color: rgba(239, 68, 68, 0.1); /* Light version of error color */
-  border: 1px solid ${theme.colors.error};
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-`;
-
-const NoProductsContainer = styled.div`
-  background-color: rgba(245, 158, 11, 0.1); /* Light yellow */
-  border: 1px solid #F59E0B; /* Amber/Yellow */
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-`;
-
-const HeaderSection = styled.div`
-    text-align: center;
-    margin-bottom: ${theme.spacing['2xl']};
-    padding-top: ${theme.spacing.lg};
-    
-    @media (max-width: ${theme.breakpoints.sm}) {
-        margin-bottom: ${theme.spacing.lg};
-        padding-top: ${theme.spacing.md};
-    }
-`;
-
-const ProductItem = styled(motion.div)`
-    height: 100%;
-    width: 100%;
-`;
 
 function ProductListBuyer() {
     const [prods, setProds] = useState([]);
+    const [filteredProds, setFilteredProds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get search params from URL
+    const urlParams = new URLSearchParams(location.search);
+    const categoryFromUrl = urlParams.get('category');
+    const searchFromUrl = urlParams.get('search');
 
     const fetchProducts = async () => {
         try {
@@ -157,9 +59,66 @@ function ProductListBuyer() {
         }
     };
 
+    // Initialize search and category from URL
+    useEffect(() => {
+        if (categoryFromUrl) {
+            setSelectedCategory(categoryFromUrl);
+        }
+        if (searchFromUrl) {
+            setSearchTerm(searchFromUrl);
+        }
+    }, [categoryFromUrl, searchFromUrl]);
+
     useEffect(() => {
         fetchProducts();
     }, []);
+
+    // Filter products based on search and category
+    useEffect(() => {
+        let filtered = [...prods];
+
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Apply category filter
+        if (selectedCategory) {
+            filtered = filtered.filter(product =>
+                product.category.toLowerCase() === selectedCategory.toLowerCase()
+            );
+        }
+
+        setFilteredProds(filtered);
+    }, [prods, searchTerm, selectedCategory]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        updateURL();
+    };
+
+    const updateURL = () => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.set('search', searchTerm);
+        if (selectedCategory) params.set('category', selectedCategory);
+        
+        const queryString = params.toString();
+        const newUrl = queryString ? `/products?${queryString}` : '/products';
+        window.history.pushState({}, '', newUrl);
+    };
+
+    const clearFilters = () => {
+        setSearchTerm('');
+        setSelectedCategory('');
+        window.history.pushState({}, '', '/products');
+    };
+
+    const categories = [...new Set(prods.map(product => product.category).filter(Boolean))];
 
     const container = {
         hidden: { opacity: 0 },
@@ -178,14 +137,14 @@ function ProductListBuyer() {
 
     if (loading) {
         return (
-            <Container>
-                <ContentWrapper>
-                    <div className="text-center">
-                        <Loader />
-                        <Title>Loading Products...</Title>
-                        <Subtitle>Please wait while we fetch the latest products</Subtitle>
+            <div className="min-h-screen bg-white py-6 lg:py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <div className="inline-block w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <h1 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Loading Products...</h1>
+                        <p className="text-lg sm:text-base text-gray-500">Please wait while we fetch the latest products</p>
                     </div>
-                    <div className="mt-12 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {[...Array(8)].map((_, i) => (
                             <div key={i} className="animate-pulse">
                                 <div className="bg-gray-200 rounded-lg h-48 w-full"></div>
@@ -196,20 +155,20 @@ function ProductListBuyer() {
                             </div>
                         ))}
                     </div>
-                </ContentWrapper>
-            </Container>
+                </div>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Container>
-                <ContentWrapper>
+            <div className="min-h-screen bg-white py-6 lg:py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <ErrorContainer>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
                             <h2 className="text-xl font-semibold text-red-800 mb-2">Oops! Something went wrong</h2>
                             <p className="text-red-600">{error}</p>
-                        </ErrorContainer>
+                        </div>
                         <button
                             onClick={fetchProducts}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -217,20 +176,23 @@ function ProductListBuyer() {
                             Try Again
                         </button>
                     </div>
-                </ContentWrapper>
-            </Container>
+                </div>
+            </div>
         );
     }
 
-    if (prods.length === 0) {
+    const displayProducts = filteredProds.length > 0 ? filteredProds : prods;
+    const hasActiveFilters = searchTerm || selectedCategory;
+
+    if (!loading && prods.length === 0) {
         return (
-            <Container>
-                <ContentWrapper>
+            <div className="min-h-screen bg-white py-6 lg:py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <NoProductsContainer>
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
                             <h2 className="text-xl font-semibold text-yellow-800 mb-2">No Products Available</h2>
                             <p className="text-yellow-600">Check back later for new products!</p>
-                        </NoProductsContainer>
+                        </div>
                         <button
                             onClick={fetchProducts}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -238,32 +200,144 @@ function ProductListBuyer() {
                             Refresh
                         </button>
                     </div>
-                </ContentWrapper>
-            </Container>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Container>
-            <ContentWrapper>
-                <HeaderSection>
-                    <Title>Our Products</Title>
-                    <Subtitle>Find the perfect items for your needs</Subtitle>
-                </HeaderSection>
+        <div className="min-h-screen bg-gray-50 py-6 lg:py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12 pt-6 lg:pt-8">
+                    <h1 className="text-3xl sm:text-2xl font-bold text-gray-900 mb-2">Our Products</h1>
+                    <p className="text-lg sm:text-base text-gray-500">Find the perfect items for your needs</p>
+                </div>
 
-                <ProductGrid 
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                >
-                    {prods.map((product) => (
-                        <ProductItem key={product._id} variants={item}>
-                            <BuyerProductCard data={product} />
-                        </ProductItem>
-                    ))}
-                </ProductGrid>
-            </ContentWrapper>
-        </Container>
+                {/* Search and Filter Section */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+                    <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 mb-4">
+                        <div className="flex-1 relative">
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                            <input
+                                type="text"
+                                placeholder="Search products, brands, categories..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                        </div>
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => {
+                                setSelectedCategory(e.target.value);
+                                setTimeout(updateURL, 100);
+                            }}
+                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[200px]"
+                        >
+                            <option value="">All Categories</option>
+                            {categories.map((category) => (
+                                <option key={category} value={category}>
+                                    {category}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="submit"
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium inline-flex items-center"
+                        >
+                            <FiSearch className="mr-2 h-4 w-4" />
+                            Search
+                        </button>
+                    </form>
+                    
+                    {/* Active Filters */}
+                    {hasActiveFilters && (
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm text-gray-600">Active filters:</span>
+                            {searchTerm && (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
+                                    Search: "{searchTerm}"
+                                    <button
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setTimeout(updateURL, 100);
+                                        }}
+                                        className="ml-2 text-indigo-600 hover:text-indigo-800"
+                                    >
+                                        <FiX className="h-3 w-3" />
+                                    </button>
+                                </span>
+                            )}
+                            {selectedCategory && (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                                    Category: {selectedCategory}
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCategory('');
+                                            setTimeout(updateURL, 100);
+                                        }}
+                                        className="ml-2 text-green-600 hover:text-green-800"
+                                    >
+                                        <FiX className="h-3 w-3" />
+                                    </button>
+                                </span>
+                            )}
+                            <button
+                                onClick={clearFilters}
+                                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                            >
+                                Clear all
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Results Summary */}
+                <div className="mb-6">
+                    <p className="text-gray-600">
+                        {hasActiveFilters
+                            ? `Showing ${displayProducts.length} of ${prods.length} products`
+                            : `Showing ${displayProducts.length} products`
+                        }
+                        {searchTerm && ` for "${searchTerm}"`}
+                        {selectedCategory && ` in ${selectedCategory}`}
+                    </p>
+                </div>
+
+                {/* No Results Message */}
+                {hasActiveFilters && displayProducts.length === 0 && (
+                    <div className="text-center py-12">
+                        <FiAlertCircle className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                        <p className="text-gray-600 mb-4">
+                            No products match your current filters. Try adjusting your search or category selection.
+                        </p>
+                        <button
+                            onClick={clearFilters}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            Clear filters
+                        </button>
+                    </div>
+                )}
+
+                {/* Products Grid */}
+                {displayProducts.length > 0 && (
+                    <motion.div 
+                        className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                    >
+                        {displayProducts.map((product) => (
+                            <motion.div key={product._id} variants={item} className="h-full w-full">
+                                <BuyerProductCard data={product} />
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                )}
+            </div>
+        </div>
     );
 }
 
