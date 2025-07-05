@@ -9,7 +9,7 @@ function ProductListSeller() {
 
     const fetchProducts = async () => {
         try {
-            const storedData = JSON.parse(localStorage.getItem('token'));
+            const storedData = JSON.parse(localStorage.getItem('user'));
             if (!storedData?.token) {
                 throw new Error("Authentication token not found.");
             }

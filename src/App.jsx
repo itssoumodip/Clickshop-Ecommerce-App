@@ -25,6 +25,7 @@ import ParchesListBuyer from "./components/productList/ParchesListBuyer.jsx";
 import ProductListSeller from "./components/productList/ProductListSeller.jsx";
 import DetailPageSeller from "./components/productList/DetailPageSeller.jsx";
 import About from "./components/productCard/About.jsx";
+import Profile from "./components/login/Profile.jsx";
 import { useUser } from "./context/userContext.jsx";
 import OrderHistory from "./components/orders/OrderHistory.jsx";
 
@@ -86,6 +87,7 @@ function App() {
                   <Route path="/add" element={<ProductPage />} />
                   <Route path="/update" element={<AllProducts />} />
                   <Route path="/detail/:id" element={<DetailPageSeller />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/about" element={<About />} />
                 </Route>
               </>
@@ -103,6 +105,7 @@ function App() {
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/orders" element={<OrderHistory />} />
                   <Route path="/parches" element={<ParchesListBuyer />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/about" element={<About />} />
                 </Route>
               </>

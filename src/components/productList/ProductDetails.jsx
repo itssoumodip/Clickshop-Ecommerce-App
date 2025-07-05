@@ -3,13 +3,17 @@ import logo from '../../imgLogo/logo.png';
 import { useProduct } from '../../context/productContext.jsx';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { FiShoppingCart, FiShoppingBag, FiStar, FiShield, FiTruck, FiRotateCcw } from 'react-icons/fi';
 
 function ProductDetails() {
     const { tarProduct } = useProduct();
     const navigate = useNavigate();
     const [selectedImage, setSelectedImage] = useState('');
+    const [quantity, setQuantity] = useState(1);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [isBuyingNow, setIsBuyingNow] = useState(false);
 
-    const { name, brand, description, price, category } = tarProduct;
+    const { name, brand, description, price, category, stock, subcategory } = tarProduct;
     // Ensure imagesUrl is always an array
     const imageList = Array.isArray(tarProduct.imagesUrl) ? tarProduct.imagesUrl : (tarProduct.imagesUrl ? [tarProduct.imagesUrl] : []);
 
@@ -26,43 +30,50 @@ function ProductDetails() {
 
     const handleBuy = async () => {
         try {
+            setIsBuyingNow(true);
             const storedData = JSON.parse(localStorage.getItem("user"));
             if (!storedData?.token) throw new Error("Not logged in");
             
             const res = await axios.post(
                 "http://localhost:5000/cart/add",
-                { productId: tarProduct._id, quantity: 1 },
+                { productId: tarProduct._id, quantity: quantity },
                 { headers: { Authorization: `Bearer ${storedData.token}` } }
             );
 
             if (res.status === 200 || res.status === 201) {
-                navigate(`/order/${res.data.cart._id}`);
+                navigate('/cart');
             }
         } catch (error) {
             navigate('/login');
+        } finally {
+            setIsBuyingNow(false);
         }
     };
 
     const addToCart = async () => {
         try {
+            setIsAddingToCart(true);
             const storedData = JSON.parse(localStorage.getItem("user"));
             if (!storedData?.token) throw new Error("Not logged in");
 
             const res = await axios.post(
                 "http://localhost:5000/cart/add",
-                { productId: tarProduct._id, quantity: 1 },
+                { productId: tarProduct._id, quantity: quantity },
                 { headers: { Authorization: `Bearer ${storedData.token}` } }
             );
 
-            if (res.status === 200) {
-                alert("Product added to cart!");
-                navigate('/cart');
-            } else if (res.status === 201) {
-                alert("Product is already in your cart.");
-                navigate('/cart');
+            if (res.status === 200 || res.status === 201) {
+                // Show success notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                notification.textContent = 'Added to cart successfully!';
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
             }
         } catch (error) {
             navigate('/login');
+        } finally {
+            setIsAddingToCart(false);
         }
     };
 
@@ -100,31 +111,106 @@ function ProductDetails() {
 
                     {/* Product Information */}
                     <div className="flex flex-col justify-center">
-                        <span className="text-sm font-semibold text-indigo-600 uppercase">{category}</span>
-                        <h1 className="text-4xl font-bold text-gray-900 mt-2 mb-2">{name}</h1>
-                        <p className="text-lg text-gray-500 mb-4">{brand}</p>
+                        <nav className="text-sm text-gray-500 mb-4">
+                            <span>{category}</span> {subcategory && <span> / {subcategory}</span>}
+                        </nav>
+                        
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{name}</h1>
+                        <p className="text-lg text-gray-600 mb-4">{brand}</p>
+                        
+                        {/* Rating placeholder */}
+                        <div className="flex items-center mb-4">
+                            <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                    <FiStar key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <span className="ml-2 text-sm text-gray-500">(4.5 out of 5)</span>
+                        </div>
+                        
+                        <div className="mb-6">
+                            <span className="text-3xl font-bold text-gray-900">₹{price}</span>
+                        </div>
                         
                         <p className="text-gray-700 text-base leading-relaxed mb-6">
                             {description}
                         </p>
 
+                        {/* Stock Status */}
                         <div className="mb-6">
-                            <span className="text-3xl font-extrabold text-gray-900">₹{price}</span>
+                            {stock > 0 ? (
+                                <div className="flex items-center">
+                                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                    <span className="text-green-600 font-medium">
+                                        {stock > 10 ? 'In Stock' : `Only ${stock} left in stock`}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center">
+                                    <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                    <span className="text-red-600 font-medium">Out of Stock</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Quantity Selector */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                            <div className="flex items-center border border-gray-300 rounded-lg w-32">
+                                <button
+                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    className="px-3 py-2 text-gray-600 hover:text-gray-800 focus:outline-none"
+                                    disabled={quantity <= 1}
+                                >
+                                    -
+                                </button>
+                                <span className="px-4 py-2 text-center flex-1">{quantity}</span>
+                                <button
+                                    onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+                                    className="px-3 py-2 text-gray-600 hover:text-gray-800 focus:outline-none"
+                                    disabled={quantity >= stock}
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
                         
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4 mb-8">
                             <button
                                 onClick={addToCart}
-                                className="flex-1 bg-indigo-100 text-indigo-700 font-semibold py-3 px-6 rounded-lg hover:bg-indigo-200 transition duration-300"
+                                disabled={isAddingToCart || stock <= 0}
+                                className="flex-1 bg-white border-2 border-indigo-600 text-indigo-600 font-semibold py-3 px-6 rounded-lg hover:bg-indigo-50 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                             >
-                                Add to Cart
+                                <FiShoppingCart className="mr-2" />
+                                {isAddingToCart ? 'Adding...' : 'Add to Cart'}
                             </button>
                             <button
                                 onClick={handleBuy}
-                                className="flex-1 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300"
+                                disabled={isBuyingNow || stock <= 0}
+                                className="flex-1 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                             >
-                                Buy Now
+                                <FiShoppingBag className="mr-2" />
+                                {isBuyingNow ? 'Processing...' : 'Buy Now'}
                             </button>
+                        </div>
+
+                        {/* Features */}
+                        <div className="border-t border-gray-200 pt-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Why shop with us?</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-center">
+                                    <FiTruck className="h-5 w-5 text-green-500 mr-3" />
+                                    <span className="text-sm text-gray-600">Free shipping on orders over ₹999</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <FiRotateCcw className="h-5 w-5 text-green-500 mr-3" />
+                                    <span className="text-sm text-gray-600">30-day return policy</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <FiShield className="h-5 w-5 text-green-500 mr-3" />
+                                    <span className="text-sm text-gray-600">Secure payment</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

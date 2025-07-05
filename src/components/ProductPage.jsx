@@ -80,7 +80,7 @@ const ProductPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const storedData = JSON.parse(localStorage.getItem("token"));
+            const storedData = JSON.parse(localStorage.getItem("user"));
             if (!storedData?.token) throw new Error("No auth token found");
 
             await axios.post("http://localhost:5000/product/addProduct", formData, {
