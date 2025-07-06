@@ -113,7 +113,7 @@ const OrderHistory = () => {
                 </InfoItem>
                 <InfoItem>
                   <span>Total Amount:</span>
-                  <span>${order.totalAmount?.toFixed(2) || '0.00'}</span>
+                  <span>₹{order.totalAmount?.toFixed(2) || '0.00'}</span>
                 </InfoItem>
                 <InfoItem>
                   <span>Payment Method:</span>

@@ -7,6 +7,7 @@ import productApi from './route/productRoute.js';
 import adminApi from './route/adminRoute.js';
 import bodyParser from 'body-parser';
 import cartApi from './route/cartRoute.js';
+import orderApi from './route/orderRoute.js';
 
 
 dotenv.config()
@@ -24,6 +25,7 @@ app.use('/user',userApi)
 app.use('/product',productApi)
 app.use('/admin', adminApi)
 app.use('/cart',cartApi)
+app.use('/order', orderApi)
 
 
 app.listen(Port, () => { console.log(`app is running at http://127.0.0.1:${Port}`) })

@@ -8,6 +8,7 @@ function ProductListSeller() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [orders, setOrders] = useState([]);
 
     const fetchProducts = async () => {
         try {
@@ -114,66 +115,89 @@ function ProductListSeller() {
         }
     };
 
+    const fetchOrders = async () => {
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const token = user?.token;
+            if (!token) throw new Error("Authentication token not found.");
+            const res = await axios.get("http://localhost:5000/order/getOrdersForSeller", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setOrders(res.data.orders || []);
+        } catch (err) {
+            setOrders([]);
+        }
+    };
+
+    const handleApprove = async (orderId) => {
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const token = user?.token;
+            await axios.post(
+                "http://localhost:5000/order/approveOrder",
+                { orderId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            fetchOrders(); // Refresh the order list
+        } catch (err) {
+            alert("Failed to approve order.");
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
+        fetchOrders();
     }, []);
 
     const storedData = JSON.parse(localStorage.getItem('user') || '{}');
     
     return (
         <main className="bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-6 py-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Seller Dashboard</h1>
-                <p className="text-gray-600 mb-8">Here are the products you've listed for sale.</p>
-
-                {/* Debug info - can be removed in production */}
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-                    <h3 className="font-bold mb-1">Debug Info (Remove in production)</h3>
-                    <p>Your seller ID: {storedData._id}</p>
-                    <p>Your account type: {storedData.userType}</p>
+            <div className="container mx-auto px-6 py-8">        
+                {/* Orders Table */}
+                <div className="mt-12">
+                    <h2 className="text-2xl font-bold mb-4">Order Requests</h2>
+                    {orders.length === 0 ? (
+                        <div className="text-gray-500">No order requests found.</div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white rounded-lg shadow-md">
+                                <thead>
+                                    <tr>
+                                        <th className="px-4 py-2">Product</th>
+                                        <th className="px-4 py-2">Buyer</th>
+                                        <th className="px-4 py-2">Quantity</th>
+                                        <th className="px-4 py-2">Status</th>
+                                        <th className="px-4 py-2">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.map(order => (
+                                        order.products.map((prod, idx) => (
+                                            <tr key={order._id + '-' + idx}>
+                                                <td className="border px-4 py-2">{prod.product?.name || 'N/A'}</td>
+                                                <td className="border px-4 py-2">{order.user?.email || 'N/A'}</td>
+                                                <td className="border px-4 py-2">{prod.quantity}</td>
+                                                <td className="border px-4 py-2">
+                                                    {order.status === "pending" && (
+                                                        <button
+                                                            className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+                                                            onClick={() => handleApprove(order._id)}
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                    )}
+                                                    {order.status}
+                                                </td>
+                                                <td className="border px-4 py-2">{new Date(order.createdAt).toLocaleString()}</td>
+                                            </tr>
+                                        ))
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
-
-                {loading && (
-                    <div className="text-center p-10">
-                        <p className="text-gray-500">Loading your products...</p>
-                    </div>
-                )}
-                
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md text-center">
-                        {error}
-                    </div>
-                )}
-
-                {editingProduct && (
-                    <EditProductModal
-                        product={editingProduct}
-                        onClose={() => setEditingProduct(null)}
-                        onUpdate={handleUpdate}
-                    />
-                )}
-
-                {!loading && !error && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {products.length > 0 ? (
-                            products.map((item) => (
-                                <ProductCardSeller
-                                    key={item._id}
-                                    data={item}
-                                    onDelete={fetchProducts}
-                                    onEdit={() => setEditingProduct(item)}
-                                />
-                            ))
-                        ) : (
-                            <div className="col-span-full text-center p-10 bg-white rounded-lg shadow-md">
-                                <p className="text-gray-500">You haven't listed any products yet.</p>
-                                <p className="mt-2 text-sm">
-                                    <strong>Note:</strong> Make sure you're logged in with the correct seller account.
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
         </main>
     );

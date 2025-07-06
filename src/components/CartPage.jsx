@@ -298,6 +298,17 @@ function CartPage() {
                                 />
                                 <label htmlFor="paypal">PayPal</label>
                             </PaymentOption>
+                            <PaymentOption>
+                                <input
+                                    type="radio"
+                                    id="cash_on_delivery"
+                                    name="payment"
+                                    value="cash_on_delivery"
+                                    checked={paymentMethod === 'cash_on_delivery'}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                />
+                                <label htmlFor="cash_on_delivery">Cash on Delivery</label>
+                            </PaymentOption>
                         </PaymentOptions>
                         <ButtonGroup>
                             <Button secondary onClick={() => setCheckoutStep(1)}>Back to Shipping</Button>
