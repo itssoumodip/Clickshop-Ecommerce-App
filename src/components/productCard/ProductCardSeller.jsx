@@ -3,8 +3,9 @@ import { useProduct } from '../../context/productContext.jsx'
 import logo from '../../imgLogo/logo.png'
 import { useNavigate } from 'react-router-dom'
 import { FiEdit, FiTrash2, FiEye, FiPackage } from 'react-icons/fi'
+import axios from 'axios'
 
-function ProductCardSeller({data}) {
+function ProductCardSeller({data, onDelete, onEdit}) {
     const [isDeleting, setIsDeleting] = useState(false);
     const {setTarProduct} = useProduct();
     const navigate = useNavigate();
@@ -17,16 +18,27 @@ function ProductCardSeller({data}) {
 
     const handleEdit = (e) => {
         e.stopPropagation();
-        // Navigate to edit page (you can implement this)
-        console.log('Edit product:', data._id);
+        if (onEdit) onEdit();
     }
 
     const handleDelete = async (e) => {
         e.stopPropagation();
         if (window.confirm('Are you sure you want to delete this product?')) {
             setIsDeleting(true);
-            // Implement delete functionality
-            console.log('Delete product:', data._id);
+            try {
+                const user = JSON.parse(localStorage.getItem("user"));
+                const token = user?.token;
+                if (!token) throw new Error("Authentication token not found.");
+
+                await axios.post(
+                    "http://localhost:5000/product/deleteProduct",
+                    { _id: data._id },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                if (onDelete) onDelete(); // Refresh product list in parent
+            } catch (error) {
+                alert("Failed to delete product.");
+            }
             setIsDeleting(false);
         }
     }

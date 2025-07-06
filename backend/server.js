@@ -14,7 +14,10 @@ const Port = process.env.PORT || 4000
 
 const app = express();
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  credentials: true
+}))
 
 
 app.use('/user',userApi)

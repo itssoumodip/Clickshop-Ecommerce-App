@@ -17,13 +17,21 @@ const Home = () => {
 
     const fetchFeaturedProducts = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/product/getProductUser");
+            console.log("Attempting to fetch featured products...");
+            const res = await axios.get("http://localhost:5000/product/getProductUser", {
+                timeout: 10000 // 10 second timeout
+            });
+            console.log("Featured products API response:", res.status);
             if (res.data?.product && Array.isArray(res.data.product)) {
                 // Get first 8 products as featured
                 setFeaturedProducts(res.data.product.slice(0, 8));
+                console.log("Featured products fetched successfully:", res.data.product.length);
             }
         } catch (err) {
             console.error("Error fetching featured products:", err);
+            if (err.code === 'ERR_NETWORK') {
+                console.log("Network error - please check if the backend server is running on port 5000");
+            }
         } finally {
             setLoading(false);
         }

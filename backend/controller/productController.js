@@ -141,15 +141,36 @@ const deleteProduct = expressAsyncHandler(async (req, res) => {
 
 const getProduct = expressAsyncHandler(async (req, res) => {
     try {
-        const { pId } = req.body;
-        const prod = await Product.find({sellerId: req.user._id});
-        if (!prod) {
-            return res.status(404).json({ message: "Product not found" });
+        // Get sellerId from user middleware
+        if (!req.user || !req.user._id) {
+            console.error("No user found in request");
+            return res.status(401).json({ message: "User not authenticated" });
         }
-        //console.log(prod);
+        
+        console.log("Fetching products for seller ID:", req.user._id);
+        console.log("User type:", req.user.userType);
+        
+        // Just get all products for this seller directly
+        const prod = await Product.find({sellerId: req.user._id});
+        
+        console.log("Found products count:", prod.length);
+        if (prod.length === 0) {
+            console.log("No products found for sellerId:", req.user._id);
+            
+            // Log all unique sellerIds in the database for debugging
+            const allSellerIds = await Product.distinct('sellerId');
+            console.log("All seller IDs in database:", allSellerIds);
+        }
+        
+        // Return the products (even if it's an empty array)
         return res.status(200).json({
-            message: "Product fetched successfully",
-            product: prod
+            message: "Products fetched successfully",
+            product: prod || [],
+            sellerInfo: {
+                id: req.user._id,
+                email: req.user.email,
+                userType: req.user.userType
+            }
         });
     } catch (error) {
         console.error("Error fetching product:", error);

@@ -7,6 +7,7 @@ const productApi = express.Router();
 productApi.post("/addProduct", chqSeler, addProduct);
 productApi.post("/updateProduct", chqSeler, updateProduct);
 productApi.get("/getProduct", chqSeler, getProduct);
+productApi.post("/getProduct", chqSeler, getProduct); // Support both GET and POST for backward compatibility
 productApi.get("/getProductInfo", chqSeler, getProductInfo);
 productApi.get("/getProductUser", getProductList);
 productApi.post("/deleteProduct", chqSeler, deleteProduct);

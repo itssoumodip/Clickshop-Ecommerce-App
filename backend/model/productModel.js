@@ -33,6 +33,7 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         enum: [
+            "Clothing",
             "Fashion",
             "Footwear",
             "Electronics",
@@ -77,7 +78,8 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     imagesUrl: {
-        type: String,
+        type: [String],
+        required: true
     },
     orderList: [
         {

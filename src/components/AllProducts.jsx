@@ -67,17 +67,13 @@ const AllProductsPage = () => {
 
     const fetchProducts = async () => {
         try {
-            const storedData = JSON.parse(localStorage.getItem("token"));
-            if (!storedData?.token) throw new Error("Authentication token not found.");
-            
             setLoading(true);
-            const { data } = await axios.put(
-                "http://localhost:5000/product/getProduct", {},
-                { headers: { Authorization: `Bearer ${storedData.token}` } }
-            );
+            // Use the public endpoint for buyers (no token required)
+            const { data } = await axios.get("http://localhost:5000/product/getProductUser");
             setProducts(data.product);
+            setError(null);
         } catch (err) {
-            setError("Failed to fetch products. Please log in and try again.");
+            setError("Failed to fetch products. Please try again later.");
         } finally {
             setLoading(false);
         }
@@ -90,11 +86,12 @@ const AllProductsPage = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             try {
-                const storedData = JSON.parse(localStorage.getItem("token"));
-                if (!storedData?.token) throw new Error("Authentication token not found.");
+                const user = JSON.parse(localStorage.getItem("user"));
+                const token = user?.token;
+                if (!token) throw new Error("Authentication token not found.");
 
                 await axios.post(`http://localhost:5000/product/deleteProduct`, { _id: id }, 
-                    { headers: { Authorization: `Bearer ${storedData.token}` } }
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
                 fetchProducts(); // Refetch products to update the list
             } catch (error) {
@@ -105,12 +102,13 @@ const AllProductsPage = () => {
 
     const handleUpdate = async (updatedProduct) => {
         try {
-            const storedData = JSON.parse(localStorage.getItem("token"));
-            if (!storedData?.token) throw new Error("Authentication token not found.");
+            const user = JSON.parse(localStorage.getItem("user"));
+            const token = user?.token;
+            if (!token) throw new Error("Authentication token not found.");
             
             await axios.post(
                 `http://localhost:5000/product/updateProduct`, updatedProduct,
-                { headers: { Authorization: `Bearer ${storedData.token}` } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setEditingProduct(null);
             fetchProducts();
