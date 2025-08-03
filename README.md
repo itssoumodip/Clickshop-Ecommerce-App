@@ -1,70 +1,117 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# ClickShop E-Commerce App
 
-## Available Scripts
+A full-stack e-commerce web application built with React, Node.js/Express, and MongoDB. ClickShop allows users to browse products, manage their shopping cart, and securely checkout. Admins can manage products and view orders.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- User authentication (JWT)
+- Product listing and search
+- Shopping cart functionality
+- Order placement
+- Admin dashboard for product and order management
+- Responsive UI with Tailwind CSS
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Node.js, Express, MongoDB, Mongoose
+- **Authentication:** JWT
+- **Other:** PostCSS, dotenv, CORS
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js & npm
+- MongoDB database (local or Atlas)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/yourusername/clickshop-ecommerce-app.git
+   cd clickshop-ecommerce-app
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. **Setup backend:**
+   ```sh
+   cd backend
+   npm install
+   # Copy env.txt to .env and update credentials
+   cp env.txt .env
+   ```
 
-### `npm run eject`
+3. **Setup frontend:**
+   ```sh
+   cd ../
+   npm install
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Running the App
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Start backend server:**
+  ```sh
+  cd backend
+  npm start
+  ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Start frontend (React) app:**
+  ```sh
+  npm start
+  ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Folder Structure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+Clickshop/
+  backend/
+    controller/
+    middleware/
+    model/
+    route/
+    mongo.connect.js
+    server.js
+    .env
+  public/
+  src/
+    components/
+    context/
+    styles/
+    App.jsx
+    index.js
+  package.json
+  README.md
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Environment Variables
 
-### Code Splitting
+Create a `.env` file in the `backend/` folder:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+PORT=5000
+DB_URL=your_mongodb_url
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=6d
+```
 
-### Analyzing the Bundle Size
+## Scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `npm start` – Start frontend development server
+- `npm test` – Run frontend tests
+- `npm run build` – Build frontend for production
+- `npm run eject` – Eject Create React App configuration
 
-### Making a Progressive Web App
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-### Advanced Configuration
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+[MIT](LICENSE)
 
-### Deployment
+## Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [Soumodip Das](https://github.com/itssoumodip)
